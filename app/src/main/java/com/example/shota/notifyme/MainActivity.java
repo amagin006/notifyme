@@ -15,6 +15,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTIFICATION_ID = 0;
     private static final String ACTION_UPDATE_NOTIFICATION =
             "com.example.android.notifyme.ACTION_UPDATE_NOTIFICATION";
-
+    private static final String ACTION_DISMISS_NOTIFICATION =
+            "com.example.android.notifyme.ACTION_DISMISS_NOTIFICATION";
 
     private Button button_notify;
     private NotificationManager mNotifyManager;
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public void cancelNotification() {
         mNotifyManager.cancel(NOTIFICATION_ID);
         setNotificationButtonState(true, false, false);
-
+        Log.d("ggg", "cancelNotification");
     }
 
     private void createNotificationChannel() {
@@ -108,30 +110,39 @@ public class MainActivity extends AppCompatActivity {
             notificationChannel.enableVibration(true);
             notificationChannel.setDescription("Notification from Mascot");
             mNotifyManager.createNotificationChannel(notificationChannel);
-
+            Log.d("ggg", "createNotification");
         }
     }
 
     private NotificationCompat.Builder getNotificationBuilder() {
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent dismissIntent = new Intent(this, MainActivity.class);
+        PendingIntent dismisspendingIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.addLine("first message")
                     .addLine("second message")
                     .setSummaryText("+3 more");
+
+
         NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(this, PRIMARY_CHANNEL_ID)
                     .setContentTitle("You've been notified!")
                     .setContentText("This is your notification text.")
                     .setSmallIcon(R.drawable.ic_android)
                     .setContentIntent(notificationPendingIntent)
                     .setAutoCancel(true)
+                    .setDeleteIntent(dismisspendingIntent)
                     .setStyle(inboxStyle)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
 
+        Log.d("ggg", "getNotificationBuilder");
         return notifyBuilder;
 
     }
+
 
     void setNotificationButtonState(Boolean isNotifyEnabled,
                                     Boolean isUpdateEnabled,
